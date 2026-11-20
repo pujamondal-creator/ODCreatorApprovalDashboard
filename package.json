@@ -1,0 +1,11 @@
+{
+  "name": "od-approvals",
+  "version": "0.1.0",
+  "private": true,
+  "description": "OD creator approval dashboard (demo build with dummy data)",
+  "scripts": {
+    "start": "node server.js",
+    "reset": "node -e \"require('fs').rmSync('data/db.json',{force:true});console.log('Demo data reset. Run npm start.')\""
+  },
+  "engines": { "node": ">=18" }
+}
