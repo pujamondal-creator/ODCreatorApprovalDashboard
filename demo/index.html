@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OD creator approval dashboard (demo)</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>:root{--bg:#FAFAF7;--card:#FFFFFF;--ink:#1B1B1A;--muted:#5F5E5A;--line:#E2E1DA;--soft:#EEEDE6;--accent:#0F6E56;--accent-dark:#0B4D3C;--accent-bg:#E3F3EC;--danger:#A32D2D;--danger-dark:#7A1F1F;--danger-bg:#FBE7E7;--warn-bg:#FAEEDA;--warn:#633806;--info-bg:#E6F1FB;--info:#0C447C;}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--ink);font-size:15px;line-height:1.5}
+h1{margin:0;font-size:26px;font-weight:500}
+h2{margin:0;font-size:18px;font-weight:500}
+p{margin:0}
+a{color:var(--accent)}a:hover{color:var(--accent-dark)}
+.wrap{max-width:760px;margin:0 auto;padding:32px 20px 72px;display:flex;flex-direction:column;gap:24px}
+.wrap.wide{max-width:1080px}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px 20px}
+.stack{display:flex;flex-direction:column;gap:12px}
+.row{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.spread{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.grow{flex:1 1 220px;min-width:0}
+button{font:500 15px Inter,system-ui,sans-serif;cursor:pointer}
+.btn{min-width:72px;height:44px;padding:0 16px;border-radius:8px;border:1px solid #CFCFC8;background:#fff;color:var(--ink)}
+.btn:hover{background:#F6F5F0}
+.btn.small{height:36px;min-width:0;padding:0 12px;font-size:13px;font-weight:400}
+.btn.yes.on{background:var(--accent-bg);border-color:var(--accent);color:var(--accent-dark)}
+.btn.no.on{background:var(--danger-bg);border-color:var(--danger);color:var(--danger-dark)}
+.btn.dark{background:var(--ink);border-color:var(--ink);color:#fff}
+.btn.dark:hover{background:#333}
+.btn.done{background:var(--accent-bg);border-color:var(--accent);color:var(--accent-dark)}
+.chip{height:36px;padding:0 14px;border-radius:18px;border:1px solid #CFCFC8;background:#fff;color:var(--muted);font-size:14px;font-weight:400}
+.chip.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.avatar{width:40px;height:40px;border-radius:50%;background:var(--soft);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;color:var(--muted);flex:none}
+.list{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:0 20px}
+.item{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:14px 0;border-top:1px solid var(--soft)}
+.item:first-child{border-top:none}
+.item .name{font-weight:500}
+.bar{height:8px;border-radius:4px;background:var(--soft)}
+.bar>i{display:block;height:8px;border-radius:4px;background:var(--accent);transition:width .25s}
+input[type=text],input[type=email]{height:44px;border-radius:8px;border:1px solid #CFCFC8;padding:0 14px;font:400 15px Inter,system-ui,sans-serif;color:var(--ink);background:#fff;width:100%}
+input:focus-visible,button:focus-visible,a:focus-visible{outline:2px solid #185FA5;outline-offset:2px}
+.check{display:flex;gap:12px;align-items:flex-start}
+.check input{width:22px;height:22px;margin:2px 0 0;flex:none}
+.banner{background:var(--accent-bg);border:1px solid var(--accent);border-radius:8px;padding:14px 16px;color:var(--accent-dark)}
+.err{color:var(--danger);font-size:14px}
+.pill{display:inline-block;padding:3px 10px;border-radius:8px;font-size:12px}
+.pill.ok{background:var(--accent-bg);color:var(--accent-dark)}
+.pill.warn{background:var(--warn-bg);color:var(--warn)}
+.pill.info{background:var(--info-bg);color:var(--info)}
+.pill.muted{background:var(--soft);color:var(--muted)}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
+.tile{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px}
+.tile b{display:block;font-size:26px;font-weight:500;margin-top:2px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{text-align:left;font-weight:400;color:var(--muted);font-size:13px;padding:8px 10px 8px 0}
+td{padding:12px 10px 12px 0;border-top:1px solid var(--soft);vertical-align:middle}
+.scroll{overflow-x:auto}
+.mini{display:inline-block;width:80px;height:6px;border-radius:3px;background:var(--soft);vertical-align:middle;margin-right:8px}
+.mini>i{display:block;height:6px;border-radius:3px;background:var(--accent)}
+.feed{display:flex;flex-direction:column;gap:8px;font-size:14px}
+.feed time{color:var(--muted);font-size:12px;display:block}
+.two{display:grid;grid-template-columns:minmax(0,1fr);gap:24px}
+@media(min-width:900px){.two{grid-template-columns:minmax(0,1.7fr) minmax(0,1fr)}}
+.celebrate{position:relative;overflow:hidden;background:var(--accent-bg);border:1px solid var(--accent);border-radius:12px;padding:28px 20px;text-align:center}
+.celebrate h2{font-size:22px;color:var(--accent-dark)}
+.celebrate p{color:var(--accent-dark);margin:6px 0 14px}
+#confetti{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:50}
+.login{max-width:420px;margin:12vh auto;padding:0 20px}
+.btn.friend.on{background:var(--info-bg);border-color:var(--info);color:var(--info)}
+.ops-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:24px}
+@media(min-width:1000px){.ops-grid{grid-template-columns:minmax(0,1fr) 230px}}
+.filters th{padding:0 8px 8px 0;font-weight:400}
+.filters input,.filters select{height:34px;width:100%;min-width:90px;font:400 13px Inter,system-ui,sans-serif;border:1px solid #CFCFC8;border-radius:8px;padding:0 8px;background:#fff;color:var(--ink)}
+select{height:44px;border-radius:8px;border:1px solid #CFCFC8;padding:0 10px;font:400 14px Inter,system-ui,sans-serif;background:#fff}
+td button:disabled{opacity:.6}
+td .btn{white-space:nowrap}
+
+#demobar{background:#1B1B1A;color:#fff;font-size:13px}
+#demobar .in{max-width:1080px;margin:0 auto;padding:10px 20px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+#demobar .tag{opacity:.7}
+#demobar button.seg{height:34px;padding:0 14px;border-radius:17px;border:1px solid #555;background:transparent;color:#fff;font-size:13px;font-weight:400}
+#demobar button.seg.on{background:#fff;color:#1B1B1A;border-color:#fff}
+#demobar select{height:34px;border-radius:8px;border:1px solid #555;background:#2A2A28;color:#fff;padding:0 8px;font:400 13px Inter,system-ui,sans-serif}
+</style></head><body>
+<div id="demobar"><div class="in"><span class="tag">Demo with dummy data. In the live app these are separate pages.</span>
+<button class="seg on" data-v="ops">Internal ops view</button>
+<button class="seg" data-v="od">OD dashboard (private link)</button>
+<select id="odpick" aria-label="OD whose dashboard to open"></select></div></div>
+<canvas id="confetti" aria-hidden="true"></canvas>
+<main id="app"></main>
+<script>
+var process={env:{}};
+var __m={};
+function __def(n,f){var m={exports:{}};f(m,m.exports);__m[n]=m.exports;}
+function require(p){return __m[p.replace(/^\.\//,'').replace(/\.js$/,'')];}
+__def('config',function(module,exports){
+module.exports = {
+  // Internal ops login: work email domains allowed in.
+  ALLOWED_DOMAINS: (process.env.ALLOWED_DOMAINS || 'welearncreators.com')
+    .split(',')
+    .map((s) => s.trim().toLowerCase())
+    .filter(Boolean),
+
+  // BD Creators Tracker mapping (confirmed by the team).
+  TRACKER: {
+    creatorHandleColumn: 'C',
+    outreachColumns: ['U', 'AB', 'AI', 'AP'], // outreach 1 to 4: holds the OD's IG handle
+    statusColumn: 'AV',
+    signedStatuses: ['am allocation', 'handed-over', 'handed over'],
+    inProgressStatuses: ['replied', 'call booked', 'in progress', 'interested'],
+  },
+
+  // 'mock' reads the dummy sheets stored in data/db.json.
+  // 'google' is where the real Google Sheets reader plugs in (see lib/sheets.js).
+  SHEETS_MODE: process.env.SHEETS_MODE || 'mock',
+};
+
+});
+__def('sheets',function(module,exports){
+// The two sources the app reads from. In demo mode both live inside data/db.json (db.sheets).
+//
+//  1. Central leads sheet: every OD's followers we may reach out to, with a Fit / Not fit qualification
+//     and follower count. Rows marked Fit appear on that OD's dashboard, highest followers first.
+//     Row shape: { od: '@od.handle', handle: '@creator', name: 'Creator Name', followers: 12400, fit: 'Fit' }
+//
+//  2. BD Creators Tracker: column C = creator IG handle, columns U / AB / AI / AP = the OD handle used for
+//     outreach 1 to 4, column AV = status ("AM Allocation" or "Handed-over" means signed).
+//     Row shape: { C: '@creator', U: '@od.handle', AB: '', AI: '', AP: '', AV: 'Replied' }
+
+const cfg = require('./config');
+
+function readLeadsSheet(db) {
+  if (cfg.SHEETS_MODE === 'mock') return db.sheets.leads;
+  throw new Error('Google Sheets reader not connected yet. Add a service account and implement readLeadsSheet.');
+}
+
+function readTracker(db) {
+  if (cfg.SHEETS_MODE === 'mock') return db.sheets.tracker;
+  throw new Error('Google Sheets reader not connected yet. Add a service account and implement readTracker.');
+}
+
+module.exports = { readLeadsSheet, readTracker };
+
+});
+__def('sync',function(module,exports){
+const cfg = require('./config');
+const sheets = require('./sheets');
+
+// Normalise IG handles so "@Maya", "maya ", and "https://instagram.com/maya/" all match.
+function norm(h) {
+  return String(h || '')
+    .trim()
+    .toLowerCase()
+    .replace(/^https?:\/\/(www\.)?instagram\.com\//, '')
+    .replace(/[/?#].*$/, '')
+    .replace(/^@/, '')
+    .replace(/\s+/g, '');
+}
+
+// Tracker status (column AV) -> yes (signed) / progress / no
+function trackerStatus(av) {
+  const s = String(av || '').trim().toLowerCase();
+  if (cfg.TRACKER.signedStatuses.includes(s)) return 'yes';
+  if (cfg.TRACKER.inProgressStatuses.includes(s)) return 'progress';
+  return 'no';
+}
+
+function titleFromHandle(key) {
+  return key.split(/[._]/).filter(Boolean).map((w) => w[0].toUpperCase() + w.slice(1)).join(' ');
+}
+
+// Imports the Fit leads from the central leads sheet for the given ODs (all ODs when none given).
+// Decisions made by ODs are never overwritten.
+function importLeads(db, odIds) {
+  const scope = odIds ? new Set(odIds) : null;
+  const odByHandle = {};
+  db.ods.forEach((o) => (odByHandle[norm(o.handle)] = o));
+  const index = new Map(db.leads.map((l) => [l.id, l]));
+  let added = 0;
+  const touched = new Set();
+  for (const row of sheets.readLeadsSheet(db)) {
+    const od = odByHandle[norm(row.od)];
+    if (!od || (scope && !scope.has(od.id))) continue;
+    const key = norm(row.handle);
+    if (!key) continue;
+    touched.add(od.id);
+    const fit = String(row.fit).trim().toLowerCase() === 'fit';
+    const id = od.id + '|' + key;
+    const existing = index.get(id);
+    if (existing) {
+      existing.fit = fit;
+      existing.followers = Number(row.followers) || 0;
+      existing.name = row.name || existing.name;
+    } else if (fit) {
+      const lead = { id, odId: od.id, key, handle: '@' + key, name: row.name || titleFromHandle(key), followers: Number(row.followers) || 0, fit: true, rank: 0, decision: null };
+      db.leads.push(lead);
+      index.set(id, lead);
+      added++;
+    }
+  }
+  for (const od of db.ods) {
+    if (scope && !scope.has(od.id)) continue;
+    od.leadsSyncedAt = new Date().toISOString();
+    db.leads.filter((l) => l.odId === od.id && l.fit).sort((a, b) => b.followers - a.followers).forEach((l, i) => (l.rank = i + 1));
+  }
+  return added;
+}
+
+// Reads the BD Creators Tracker: who outreached whom (columns U, AB, AI, AP) and the status (column AV).
+function syncTracker(db, silent) {
+  const T = cfg.TRACKER;
+  const odByHandle = {};
+  db.ods.forEach((o) => (odByHandle[norm(o.handle)] = o));
+  const nameByKey = {};
+  db.leads.forEach((l) => { if (!nameByKey[l.key]) nameByKey[l.key] = l.name; });
+  const pairs = [];
+  const seen = new Set();
+  let newSigned = 0;
+  for (const row of sheets.readTracker(db)) {
+    const creator = norm(row[T.creatorHandleColumn]);
+    if (!creator) continue;
+    const status = trackerStatus(row[T.statusColumn]);
+    const date = row.date || new Date().toISOString();
+    for (const col of T.outreachColumns) {
+      const od = odByHandle[norm(row[col])];
+      if (!od || seen.has(creator + '|' + od.id)) continue;
+      seen.add(creator + '|' + od.id);
+      pairs.push({ key: creator, handle: '@' + creator, name: nameByKey[creator] || titleFromHandle(creator), odId: od.id, odName: od.name, odHandle: od.handle, status, date });
+      if (status === 'yes') {
+        od.signed = od.signed || [];
+        if (!od.signed.some((s) => s.key === creator)) {
+          od.signed.push({ key: creator, handle: '@' + creator, at: date, seen: silent });
+          newSigned++;
+          if (!silent) db.log.unshift({ at: new Date().toISOString(), text: 'Signed through ' + od.name + ': @' + creator });
+        }
+      }
+    }
+  }
+  pairs.sort((a, b) => new Date(b.date) - new Date(a.date));
+  db.trackerView = pairs;
+  db.lastTrackerSyncAt = new Date().toISOString();
+  return newSigned;
+}
+
+// odIds: import leads for these ODs (omit for all). tracker: also refresh the tracker view.
+function run(db, { silent = false, odIds, tracker = true } = {}) {
+  const result = { leadsAdded: 0, newSigned: 0 };
+  if (odIds !== null) result.leadsAdded = importLeads(db, odIds);
+  if (tracker) result.newSigned = syncTracker(db, silent);
+  return result;
+}
+
+module.exports = { run, norm, trackerStatus };
+
+});
+__def('stats',function(module,exports){
+// A lead is cleared for outreach when the OD has confirmed their list and marked that creator Yes.
+function isCleared(od, lead) {
+  return !!od.confirmedAt && lead.fit && lead.decision === 'yes';
+}
+
+function odStats(db, od) {
+  const mine = db.leads.filter((l) => l.odId === od.id && l.fit);
+  const count = (d) => mine.filter((l) => l.decision === d).length;
+  const yes = count('yes'), no = count('no'), friend = count('friend');
+  const total = mine.length;
+  const pending = total - yes - no - friend;
+  return {
+    id: od.id, name: od.name, handle: od.handle, owner: od.owner, token: od.token,
+    synced: !!od.leadsSyncedAt, total, yes, no, friend, pending,
+    pctReviewed: total ? Math.round(((total - pending) / total) * 100) : 0,
+    confirmed: !!od.confirmedAt, confirmedAt: od.confirmedAt || null,
+    cleared: od.confirmedAt ? yes : 0,
+    signed: (od.signed || []).length,
+  };
+}
+
+module.exports = { isCleared, odStats };
+
+});
+__def('seed',function(module,exports){
+// Dummy data for the demo. Everything here is made up.
+const sync = require('./sync');
+
+function rng(seed) {
+  let a = seed;
+  return function () {
+    a |= 0; a = (a + 0x6d2b79f5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+const DAY = 864e5;
+const FIRST = ['maya', 'josh', 'amelia', 'meera', 'omar', 'nadia', 'carlos', 'leila', 'ravi', 'kim', 'wes', 'priya', 'tomas', 'zara', 'elif', 'noah', 'aiko', 'sofia', 'liam', 'hana', 'dev', 'ines', 'yusuf', 'ella', 'arjun', 'chloe', 'ben', 'mina', 'otis', 'luca'];
+const SUFFIX = ['travels', 'fits', 'bakes', 'films', 'cooks', 'studies', 'styles', 'writes', 'builds', 'runs', 'codes', 'paints', 'daily', 'eats', 'notes'];
+const LAST = ['R.', 'T.', 'K.', 'S.', 'H.', 'P.', 'M.', 'A.', 'B.', 'D.', 'W.', 'L.'];
+
+const ODS = [
+  { name: 'Sara Lindqvist', handle: '@sara.creates', token: 'sara-7f3a91' },
+  { name: 'Daniel Wu', handle: '@daniel.wanders', token: 'daniel-2b8c40' },
+  { name: 'Priya Nair', handle: '@priyanotes', token: 'priya-9d51e7' },
+  { name: 'Kofi Asante', handle: '@kofiafterhours', token: 'kofi-41ac6d' },
+  { name: 'Leila Boutros', handle: '@leilabakes', token: 'leila-c3e208' },
+  { name: 'Marcus Tan', handle: '@marcus.trains', token: 'marcus-58f1b2' },
+];
+
+function build() {
+  const rand = rng(20261118);
+  const now = Date.now();
+  const ods = ODS.map((o, i) => ({ id: 'od' + (i + 1), name: o.name, handle: o.handle, token: o.token, owner: 'AES', confirmedAt: null, leadsSyncedAt: null, signed: [] }));
+
+  // Central leads sheet: every OD's followers with a Fit / Not fit qualification.
+  const leadsSheet = [];
+  for (const od of ods) {
+    const used = new Set();
+    for (let i = 0; i < 140; i++) {
+      let h;
+      do {
+        const f = FIRST[Math.floor(rand() * FIRST.length)];
+        const s = SUFFIX[Math.floor(rand() * SUFFIX.length)];
+        h = f + (rand() < 0.5 ? '.' : '_') + s + (used.size > 60 ? Math.floor(rand() * 90 + 10) : '');
+      } while (used.has(h));
+      used.add(h);
+      const first = h[0].toUpperCase() + h.slice(1).split(/[._]/)[0];
+      leadsSheet.push({
+        od: od.handle, handle: '@' + h, name: first + ' ' + LAST[Math.floor(rand() * LAST.length)],
+        followers: Math.round(2000 * Math.pow(200, rand())), fit: rand() < 0.85 ? 'Fit' : 'Not fit',
+      });
+    }
+  }
+
+  // BD Creators Tracker: outreach 1 to 4 through ODs, status in AV, with deliberately messy handles.
+  const tracker = [];
+  const seen = new Set();
+  const variants = [(h) => h, (h) => '@' + h, (h) => 'https://instagram.com/' + h + '/', (h) => ' ' + h.toUpperCase() + ' '];
+  const odVariant = (o) => (rand() < 0.3 ? o.handle.slice(1) : o.handle);
+  for (const od of ods) {
+    const mine = leadsSheet.filter((r) => r.od === od.handle && r.fit === 'Fit');
+    for (let k = 0; k < 26; k++) {
+      const lead = mine[Math.floor(rand() * mine.length)];
+      const key = lead.handle.slice(1);
+      if (seen.has(key)) continue;
+      seen.add(key);
+      let av, ageDays;
+      const r = rand();
+      if (k < 2) { av = k % 2 ? 'Handed-over' : 'AM Allocation'; ageDays = rand() * 5; }
+      else if (r < 0.22) { av = rand() < 0.5 ? 'AM Allocation' : 'Handed-over'; ageDays = rand() * 365; }
+      else if (r < 0.42) { av = rand() < 0.5 ? 'Replied' : 'Call booked'; ageDays = rand() * 40; }
+      else if (r < 0.55) { av = 'Not interested'; ageDays = rand() * 60; }
+      else { av = ''; ageDays = rand() * 40; }
+      const row = { C: variants[Math.floor(rand() * variants.length)](key), U: odVariant(od), AB: '', AI: '', AP: '', AV: av, date: new Date(now - ageDays * DAY).toISOString() };
+      if (rand() < 0.3) row.AB = odVariant(ods[Math.floor(rand() * ods.length)]);
+      if (rand() < 0.1) row.AI = odVariant(ods[Math.floor(rand() * ods.length)]);
+      tracker.push(row);
+    }
+  }
+
+  return { ods, leads: [], log: [], trackerView: [], sheets: { leads: leadsSheet, tracker } };
+}
+
+// First load: ODs 1 to 5 already synced, Marcus not yet (so Run sync has something to show).
+function initialSync(db) {
+  sync.run(db, { silent: true, odIds: ['od1', 'od2', 'od3', 'od4', 'od5'] });
+}
+
+// Puts the demo in a lively state: different ODs at different stages.
+function applyDemoState(db) {
+  const byId = (id) => db.ods.find((o) => o.id === id);
+  const leadsOf = (id) => db.leads.filter((l) => l.odId === id && l.fit).sort((a, b) => a.rank - b.rank);
+  const decide = (i) => (i % 10 === 3 ? 'no' : i % 10 === 7 ? 'friend' : 'yes');
+
+  leadsOf('od1').forEach((l, i) => (l.decision = decide(i)));
+  byId('od1').confirmedAt = new Date(Date.now() - DAY).toISOString();
+  const sara = byId('od1').signed;
+  if (sara.length) sara.slice().sort((a, b) => new Date(b.at) - new Date(a.at))[0].seen = false;
+
+  leadsOf('od2').slice(0, 52).forEach((l, i) => (l.decision = decide(i)));
+  leadsOf('od4').slice(0, 14).forEach((l) => (l.decision = 'yes'));
+  leadsOf('od5').forEach((l, i) => (l.decision = decide(i + 2)));
+  byId('od5').confirmedAt = new Date(Date.now() - 3 * DAY).toISOString();
+  db.log.unshift({ at: new Date().toISOString(), text: 'Demo data loaded' });
+}
+
+module.exports = { build, initialSync, applyDemoState };
+
+});
+__def('db', function (module) {
+  var seed = require('./seed');
+  var KEY = 'od-approvals-demo-v2', db = null;
+  function persist() { try { localStorage.setItem(KEY, JSON.stringify(db)); } catch (e) {} }
+  function fresh() { db = seed.build(); seed.initialSync(db); seed.applyDemoState(db); persist(); return db; }
+  function get() {
+    if (db) return db;
+    try { var s = localStorage.getItem(KEY); if (s) { db = JSON.parse(s); return db; } } catch (e) {}
+    return fresh();
+  }
+  module.exports = { get: get, save: persist, reset: fresh };
+});
+
+__def('api',function(module,exports){
+// All app endpoints in one place. Used by the Node server and by the single-file hosted demo.
+// route(method, pathname, searchParams, body, ctx) -> { status, json | text, contentType, login, logout }
+// ctx.user = the signed-in ops email or null.
+const store = require('./db');
+const cfg = require('./config');
+const sync = require('./sync');
+const { isCleared, odStats } = require('./stats');
+
+const J = (status, json, extra) => Object.assign({ status, json }, extra || {});
+const csvCell = (v) => '"' + String(v).replace(/"/g, '""') + '"';
+const PAGE = 25;
+
+function route(method, p, q, body, ctx) {
+  const db = store.get();
+  const now = new Date().toISOString();
+  let m;
+
+  // ---------- OD dashboard (no login, private link token) ----------
+  m = p.match(/^\/api\/od\/([\w-]+)(?:\/(\w+))?$/);
+  if (m) {
+    const od = db.ods.find((o) => o.token === m[1]);
+    if (!od) return J(404, { error: 'This link is not valid.' });
+    const sub = m[2];
+    const mine = db.leads.filter((l) => l.odId === od.id && l.fit).sort((a, b) => b.followers - a.followers);
+
+    if (method === 'GET' && !sub) {
+      const unseen = (od.signed || []).filter((s) => !s.seen);
+      return J(200, {
+        od: { name: od.name, firstName: od.name.split(' ')[0], handle: od.handle, confirmedAt: od.confirmedAt },
+        synced: !!od.leadsSyncedAt,
+        total: mine.length,
+        decided: mine.filter((l) => l.decision).length,
+        signed: (od.signed || []).slice().sort((a, b) => new Date(b.at) - new Date(a.at)).map((s) => ({ handle: s.handle, at: s.at })),
+        unseen: unseen.map((s) => s.handle),
+      });
+    }
+    if (method === 'GET' && sub === 'list') {
+      const needle = sync.norm(q.get('q') || '');
+      const page = Math.max(0, Number(q.get('page')) || 0);
+      const all = mine.filter((l) => !needle || l.key.includes(needle));
+      return J(200, {
+        items: all.slice(page * PAGE, page * PAGE + PAGE).map((l) => ({ id: l.id, handle: l.handle, decision: l.decision })),
+        total: all.length,
+        hasMore: (page + 1) * PAGE < all.length,
+      });
+    }
+    if (method === 'POST') {
+      const lead = body.leadId ? db.leads.find((l) => l.id === body.leadId && l.odId === od.id) : null;
+      if (sub === 'decide' && lead) {
+        lead.decision = ['yes', 'no', 'friend'].includes(body.decision) ? body.decision : null;
+        db.log.unshift({ at: now, text: od.name + ' marked ' + lead.handle + ' as ' + (lead.decision || 'undecided') });
+        db.log.length = Math.min(db.log.length, 200);
+        store.save();
+        return J(200, { ok: true });
+      }
+      if (sub === 'confirm') {
+        od.confirmedAt = now;
+        db.log.unshift({ at: now, text: od.name + ' confirmed their list' });
+        store.save();
+        return J(200, { ok: true, confirmedAt: now });
+      }
+      if (sub === 'seen') {
+        (od.signed || []).forEach((s) => (s.seen = true));
+        store.save();
+        return J(200, { ok: true });
+      }
+    }
+    return J(400, { error: 'Bad request' });
+  }
+
+  // ---------- Ops login ----------
+  if (p === '/api/ops/login' && method === 'POST') {
+    const email = String(body.email || '').trim().toLowerCase();
+    const domain = email.split('@')[1] || '';
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return J(400, { error: 'Enter a valid work email.' });
+    if (!cfg.ALLOWED_DOMAINS.includes(domain)) return J(403, { error: 'Use your work email (' + cfg.ALLOWED_DOMAINS.map((d) => '@' + d).join(', ') + ').' });
+    return J(200, { ok: true, email }, { login: email });
+  }
+  if (p === '/api/ops/logout' && method === 'POST') return J(200, { ok: true }, { logout: true });
+
+  if (p.startsWith('/api/ops/')) {
+    if (!ctx.user) return J(401, { error: 'Sign in with your work email.' });
+
+    if (p === '/api/ops/summary' && method === 'GET') {
+      const rows = db.ods.map((o) => odStats(db, o));
+      const sum = (k) => rows.reduce((a, r) => a + r[k], 0);
+      return J(200, {
+        user: ctx.user,
+        tiles: { cleared: sum('cleared'), doNotContact: sum('no') + sum('friend'), awaiting: sum('pending') },
+        ods: rows,
+        pairs: db.trackerView || [],
+        activity: db.log.slice(0, 12),
+        lastTrackerSyncAt: db.lastTrackerSyncAt || null,
+      });
+    }
+    if (p === '/api/ops/export.csv' && method === 'GET') {
+      const lines = [['OD', 'OD handle', 'Creator handle', 'Followers'].map(csvCell).join(',')];
+      for (const od of db.ods) {
+        db.leads.filter((l) => l.odId === od.id && isCleared(od, l)).sort((a, b) => b.followers - a.followers)
+          .forEach((l) => lines.push([od.name, od.handle, l.handle, l.followers].map(csvCell).join(',')));
+      }
+      return { status: 200, text: lines.join('\n'), contentType: 'text/csv; charset=utf-8' };
+    }
+    if (method === 'POST') {
+      if (p === '/api/ops/sync-leads') {
+        // Run sync for one OD: imports all Fit leads for that OD from the central leads sheet.
+        const od = db.ods.find((o) => o.id === body.odId);
+        if (!od) return J(404, { error: 'Unknown OD' });
+        const r = sync.run(db, { odIds: [od.id] });
+        db.log.unshift({ at: now, text: 'Run sync for ' + od.name + ': ' + r.leadsAdded + ' new leads imported' });
+        store.save();
+        return J(200, r);
+      }
+      if (p === '/api/ops/sync-tracker') {
+        // Re-checks the BD Creators Tracker: who was signed through which OD.
+        const r = sync.run(db, { odIds: null });
+        db.log.unshift({ at: now, text: 'Tracker sync: ' + r.newSigned + ' newly signed' });
+        store.save();
+        return J(200, r);
+      }
+      if (p === '/api/ops/simulate-sign') {
+        // Demo helper: marks a creator as AM Allocation in the dummy tracker, then syncs, as the real sheet would.
+        const od = db.ods.find((o) => o.id === body.odId);
+        if (!od) return J(404, { error: 'Unknown OD' });
+        const taken = new Set((db.trackerView || []).filter((x) => x.odId === od.id).map((x) => x.key));
+        const pool = db.sheets.leads.filter((r) => r.od === od.handle && String(r.fit).toLowerCase() === 'fit' && !taken.has(sync.norm(r.handle)));
+        const pick = pool[Math.floor(Math.random() * Math.min(pool.length, 10))];
+        if (!pick) return J(400, { error: 'No creators left to sign for this OD.' });
+        db.sheets.tracker.push({ C: pick.handle, U: od.handle, AB: '', AI: '', AP: '', AV: 'AM Allocation', date: now });
+        const r = sync.run(db, { odIds: null });
+        store.save();
+        return J(200, { ok: true, handle: pick.handle, result: r });
+      }
+      if (p === '/api/ops/reset') { store.reset(); return J(200, { ok: true }); }
+    }
+    return J(404, { error: 'Not found' });
+  }
+  return J(404, { error: 'Not found' });
+}
+
+module.exports = { route };
+
+});
+window.startOd = function (token) {
+  var app = document.getElementById('app');
+  var S = { data: null, q: '', page: 0, items: [], hasMore: false, total: 0, showSigned: false, celebrate: false };
+
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function api(path, body) {
+    var opt = body ? { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) } : {};
+    return fetch('/api/od/' + token + path, opt).then(function (r) { return r.json().then(function (j) { if (!r.ok) throw j; return j; }); });
+  }
+  function day(iso) { return new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }); }
+  function profile(h) { return '<a href="https://instagram.com/' + esc(h.slice(1)) + '" target="_blank" rel="noopener">View profile</a>'; }
+
+  function load() {
+    return api('').then(function (d) {
+      S.data = d;
+      if (d.unseen.length) S.celebrate = true;
+      return d.synced ? loadList(true) : null;
+    }).then(function () { render(); if (S.celebrate) confetti(); }).catch(function () {
+      app.innerHTML = '<div class="card"><h2>This link is not valid</h2><p class="muted" style="margin-top:6px">Ask your contact at WeLearn for a fresh link.</p></div>';
+    });
+  }
+  function loadList(reset) {
+    if (reset) { S.page = 0; S.items = []; }
+    return api('/list?q=' + encodeURIComponent(S.q) + '&page=' + S.page).then(function (r) {
+      S.items = S.items.concat(r.items); S.hasMore = r.hasMore; S.total = r.total;
+    });
+  }
+
+  function rows() {
+    if (!S.items.length) return '<p class="muted" style="padding:24px 0;text-align:center">No creators match that handle.</p>';
+    return S.items.map(function (c) {
+      function b(v, label) { return '<button class="btn ' + v + (c.decision === v ? ' on' : '') + '" data-act="decide" data-id="' + esc(c.id) + '" data-v="' + v + '">' + label + '</button>'; }
+      return '<div class="item"><div class="grow"><div class="name">' + esc(c.handle) + '</div><div class="small">' + profile(c.handle) + '</div></div>' +
+        '<div class="row" style="gap:8px">' + b('yes', 'Yes') + b('no', 'No') + b('friend', 'Friend') + '</div></div>';
+    }).join('');
+  }
+
+  function signedCard(d) {
+    var n = d.signed.length;
+    return '<div class="card stack"><div class="row"><div class="grow"><p style="font-size:28px;font-weight:500;line-height:1.2">' + n + ' <span class="muted" style="font-size:15px;font-weight:400">creators signed through your account</span></p>' +
+      '<p class="muted small" style="margin-top:4px">' + (n ? 'Latest: ' + esc(d.signed[0].handle) + ', ' + day(d.signed[0].at) : 'We will let you know the moment we sign someone.') + '</p></div>' +
+      (n ? '<button class="btn" data-act="togglesigned">' + (S.showSigned ? 'Hide the list' : 'Tap here to see the list') + '</button>' : '') + '</div>' +
+      (S.showSigned && n ? '<div class="list" style="border-radius:8px">' + d.signed.map(function (s) {
+        return '<div class="item" style="padding:10px 0"><div class="grow"><div class="name">' + esc(s.handle) + '</div><div class="small">' + profile(s.handle) + '</div></div><span class="small muted">Signed ' + day(s.at) + '</span></div>';
+      }).join('') + '</div>' : '') + '</div>';
+  }
+
+  function render() {
+    var d = S.data;
+    var focusQ = document.activeElement && document.activeElement.id === 'q';
+    var caret = focusQ ? document.activeElement.selectionStart : 0;
+    var confirmed = !!d.od.confirmedAt;
+    var pct = d.total ? Math.round(d.decided / d.total * 100) : 0;
+    var cele = S.celebrate ? '<div class="celebrate" role="status"><h2>We just signed ' + esc((d.unseen[d.unseen.length - 1] || (d.signed[0] && d.signed[0].handle) || 'a new creator')) + '</h2><p>That one came through your account. Thank you, ' + esc(d.od.firstName) + '.</p><button class="btn" data-act="closecele">Close</button></div>' : '';
+
+    var list;
+    if (!d.synced) {
+      list = '<div class="card"><h2>Your list is being prepared</h2><p class="muted" style="margin-top:6px">We will let you know as soon as it is ready for you to review.</p></div>';
+    } else {
+      list = '<section class="stack"><div><h2>Your priority creators</h2></div>' +
+        '<label class="stack small muted" style="gap:6px">Search for anyone you do not want us to contact, like friends, collaborators or fellow creators' +
+        '<input type="text" id="q" placeholder="Search by handle" value="' + esc(S.q) + '" autocomplete="off"></label>' +
+        '<div class="list">' + rows() + '</div>' +
+        (S.hasMore ? '<button class="btn" data-act="more">Show more</button>' : '') +
+        '</section>' +
+        (confirmed
+          ? '<div class="banner">Thanks, ' + esc(d.od.firstName) + '. Your list is confirmed. We will only contact creators you want us to contact.</div>'
+          : '<button class="btn dark" style="height:52px;font-size:16px" data-act="confirm">Confirm your list</button>');
+    }
+
+    app.innerHTML = cele +
+      '<div class="stack" style="gap:6px"><h1>Hi ' + esc(d.od.firstName) + ', who should we reach out to?</h1>' +
+      '<p class="muted">Mark yes, no or friend for each creator. Nobody is contacted from your account until you confirm your list.</p></div>' +
+      (d.synced ? '<div class="card stack" style="gap:10px"><div class="spread muted small"><span>Review progress</span><span>' + d.decided + ' of ' + d.total + ' done</span></div><div class="bar"><i style="width:' + pct + '%"></i></div></div>' : '') +
+      signedCard(d) + list;
+
+    if (focusQ) { var q = document.getElementById('q'); q.focus(); q.setSelectionRange(caret, caret); }
+  }
+
+  var timer;
+  app.addEventListener('input', function (e) {
+    if (e.target.id === 'q') {
+      S.q = e.target.value;
+      clearTimeout(timer);
+      timer = setTimeout(function () { loadList(true).then(render); }, 200);
+    }
+  });
+  app.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-act]');
+    if (!b) return;
+    var act = b.dataset.act;
+    if (act === 'decide') {
+      var c = S.items.filter(function (x) { return x.id === b.dataset.id; })[0];
+      var next = c.decision === b.dataset.v ? null : b.dataset.v;
+      if (!c.decision && next) S.data.decided++;
+      if (c.decision && !next) S.data.decided--;
+      c.decision = next; render();
+      api('/decide', { leadId: c.id, decision: next });
+    } else if (act === 'more') { S.page++; loadList(false).then(render); }
+    else if (act === 'confirm') api('/confirm', {}).then(function (r) { S.data.od.confirmedAt = r.confirmedAt; render(); });
+    else if (act === 'togglesigned') { S.showSigned = !S.showSigned; render(); }
+    else if (act === 'closecele') { S.celebrate = false; S.data.unseen = []; render(); api('/seen', {}); }
+  });
+
+  function confetti() {
+    var cv = document.getElementById('confetti'), ctx = cv.getContext('2d');
+    cv.width = innerWidth; cv.height = innerHeight;
+    var cols = ['#0F6E56', '#185FA5', '#BA7517', '#D4537E', '#534AB7', '#D85A30'];
+    var parts = [];
+    for (var i = 0; i < 160; i++) parts.push({ x: innerWidth / 2 + (Math.random() - .5) * 200, y: innerHeight * 0.25, vx: (Math.random() - .5) * 16, vy: -Math.random() * 14 - 3, r: Math.random() * 5 + 3, c: cols[i % cols.length], a: Math.random() * 6, va: (Math.random() - .5) * .4 });
+    (function tick() {
+      ctx.clearRect(0, 0, cv.width, cv.height);
+      var alive = 0;
+      parts.forEach(function (p) {
+        p.vy += .35; p.x += p.vx; p.y += p.vy; p.a += p.va;
+        if (p.y < cv.height + 20) { alive++; ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.a); ctx.fillStyle = p.c; ctx.fillRect(-p.r, -p.r / 2, p.r * 2, p.r); ctx.restore(); }
+      });
+      if (alive) requestAnimationFrame(tick); else ctx.clearRect(0, 0, cv.width, cv.height);
+    })();
+  }
+
+  load();
+};
+
+window.startOps = function () {
+  var app = document.getElementById('app');
+  var D = null;
+  var S = { search: '', period: 'all', f1: { od: '', conf: '', cleared: '' }, f2: { creator: '', od: '', signed: '' }, shown: 15 };
+  var PERIODS = [['week', 'Weekly', 7], ['month', 'Monthly', 30], ['ten', '3 times a month', 10], ['quarter', 'Quarterly', 90], ['year', 'Yearly', 365], ['all', 'All time', 0]];
+
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function num(n) { return Number(n).toLocaleString('en-GB'); }
+  function time(iso) { return iso ? new Date(iso).toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : 'never'; }
+  function dshort(iso) { return iso ? new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : ''; }
+  function ig(h) { return 'https://instagram.com/' + String(h).replace(/^@/, ''); }
+  function api(path, body) {
+    var opt = body !== undefined ? { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) } : {};
+    return fetch('/api/ops/' + path, opt).then(function (r) { return r.json().then(function (j) { if (!r.ok) { j.status = r.status; throw j; } return j; }); });
+  }
+
+  function loginView(msg) {
+    app.innerHTML =
+      '<div class="login stack" style="gap:16px"><h1>OD approvals</h1><p class="muted">Sign in with your work email to see the review progress and the cleared list.</p>' +
+      '<form id="f" class="stack"><label class="stack small muted" style="gap:6px">Work email<input type="email" id="email" placeholder="you@welearncreators.com" autocomplete="email" required></label>' +
+      (msg ? '<p class="err">' + esc(msg) + '</p>' : '') +
+      '<button class="btn dark" type="submit" style="height:48px">Sign in</button></form>' +
+      '<p class="small muted">Demo build: this checks the email domain only. The live version uses single sign-on with your work account.</p></div>';
+    document.getElementById('f').addEventListener('submit', function (e) {
+      e.preventDefault();
+      api('login', { email: document.getElementById('email').value }).then(refresh).catch(function (er) { loginView(er.error); });
+    });
+  }
+
+  function refresh() {
+    return api('summary').then(function (d) { var first = !D; D = d; if (first || !document.getElementById('t1')) skeleton(); renderAll(); })
+      .catch(function (e) { if (e.status === 401) { D = null; loginView(); } else app.innerHTML = '<p class="wrap err">' + esc(e.error || 'Could not load.') + '</p>'; });
+  }
+
+  function skeleton() {
+    var periods = PERIODS.map(function (p) { return '<button class="chip' + (S.period === p[0] ? ' on' : '') + '" data-act="period" data-v="' + p[0] + '">' + p[1] + '</button>'; }).join('');
+    app.innerHTML =
+      '<div class="wrap wide">' +
+      '<div class="spread"><div><h1>OD approvals</h1><p class="muted" style="margin-top:4px">Outreach may only use the Cleared to contact export.</p></div>' +
+      '<div class="row"><span class="small muted">' + esc(D.user) + '</span><button class="btn small" data-act="logout">Sign out</button><button class="btn dark" data-act="export">Export cleared list</button></div></div>' +
+      '<div class="tiles" id="tiles"></div>' +
+      '<input type="text" id="gsearch" placeholder="Search ODs and creators across both tables" value="' + esc(S.search) + '" autocomplete="off">' +
+      '<div id="exportbox"></div>' +
+      '<div class="ops-grid"><div class="stack" style="gap:24px;min-width:0">' +
+      '<div class="card"><div class="spread" style="margin-bottom:8px"><h2>OD review progress</h2><span class="small muted" id="t1count"></span></div><div class="scroll"><table id="t1"><thead>' +
+      '<tr><th>Run sync</th><th>OD</th><th>Full list confirmed</th><th>Cleared to contact</th><th></th></tr>' +
+      '<tr class="filters"><th></th><th><input type="text" data-f1="od" placeholder="Filter OD"></th>' +
+      '<th><select data-f1="conf"><option value="">All</option><option value="yes">Confirmed</option><option value="no">Yet to be confirmed</option></select></th>' +
+      '<th><input type="text" data-f1="cleared" placeholder="Min number"></th><th></th></tr></thead><tbody></tbody></table></div></div>' +
+      '<div class="card"><div class="spread" style="margin-bottom:8px"><div><h2>Creators signed (BD Creators Tracker)</h2><p class="small muted" id="t2sub"></p></div></div>' +
+      '<div class="row" style="gap:8px;margin-bottom:10px">' + periods + '</div>' +
+      '<div class="scroll"><table id="t2"><thead>' +
+      '<tr><th>Run sync now</th><th>Creator</th><th>OD</th><th>Signed</th></tr>' +
+      '<tr class="filters"><th></th><th><input type="text" data-f2="creator" placeholder="Filter creator"></th>' +
+      '<th><select data-f2="od"><option value="">All ODs</option>' + D.ods.map(function (o) { return '<option value="' + esc(o.id) + '">' + esc(o.name) + '</option>'; }).join('') + '</select></th>' +
+      '<th><select data-f2="signed"><option value="">All</option><option value="yes">Yes</option><option value="progress">In progress</option><option value="no">No</option></select></th></tr></thead><tbody></tbody></table></div>' +
+      '<div id="more"></div></div></div>' +
+      '<aside class="stack" style="gap:24px"><div class="card stack"><h2>Activity</h2><div class="feed small" id="feed"></div></div>' +
+      '<div class="card stack"><h2>Demo tools</h2><select id="simod">' + D.ods.map(function (o) { return '<option value="' + esc(o.id) + '">' + esc(o.name) + '</option>'; }).join('') + '</select>' +
+      '<button class="btn" data-act="simulate">Simulate signing</button><button class="btn small" data-act="reset">Reset demo data</button><p class="small muted" id="simmsg"></p></div></aside></div></div>';
+  }
+
+  function inPeriod(iso) {
+    var p = PERIODS.filter(function (x) { return x[0] === S.period; })[0];
+    if (!p[2]) return true;
+    return Date.now() - new Date(iso).getTime() <= p[2] * 86400000;
+  }
+
+  function renderAll() { renderTiles(); renderT1(); renderT2(); document.getElementById('feed').innerHTML = D.activity.map(function (a) { return '<div><time>' + time(a.at) + '</time>' + esc(a.text) + '</div>'; }).join(''); }
+
+  function signedCount() {
+    var seen = {};
+    D.pairs.forEach(function (p) { if (p.status === 'yes' && inPeriod(p.date)) seen[p.key] = 1; });
+    return Object.keys(seen).length;
+  }
+  function renderTiles() {
+    var t = D.tiles;
+    document.getElementById('tiles').innerHTML = [['Cleared to contact', num(t.cleared)], ['Do not contact', num(t.doNotContact)], ['Waiting for OD', num(t.awaiting)], ['Creators signed', num(signedCount())]].map(function (x) {
+      return '<div class="tile"><span class="small muted">' + x[0] + '</span><b>' + x[1] + '</b></div>';
+    }).join('');
+  }
+
+  function renderT1() {
+    var g = S.search.toLowerCase(), f = S.f1;
+    var list = D.ods.filter(function (o) {
+      var hay = (o.name + ' ' + o.handle).toLowerCase();
+      if (g && hay.indexOf(g) < 0) return false;
+      if (f.od && hay.indexOf(f.od.toLowerCase()) < 0) return false;
+      if (f.conf === 'yes' && !o.confirmed) return false;
+      if (f.conf === 'no' && o.confirmed) return false;
+      if (f.cleared && o.cleared < Number(f.cleared)) return false;
+      return true;
+    });
+    document.getElementById('t1count').textContent = list.length + ' of ' + D.ods.length + ' ODs';
+    document.querySelector('#t1 tbody').innerHTML = list.length ? list.map(function (o) {
+      var conf = !o.synced ? '<span class="pill muted">Not synced yet</span>' :
+        '<div><span class="pill ' + (o.confirmed ? 'ok' : 'warn') + '">' + (o.confirmed ? 'Yes' : 'Yet to be confirmed') + '</span> <span class="small muted">' + o.pctReviewed + '% of leads reviewed</span></div>' +
+        '<div class="small muted" style="margin-top:4px">Yes ' + num(o.yes) + ' · No ' + num(o.no) + ' · Friend ' + num(o.friend) + ' · Yet to confirm ' + num(o.pending) + '</div>';
+      return '<tr><td><button class="btn small' + (o.synced ? '' : ' dark') + '" data-act="syncod" data-id="' + esc(o.id) + '">' + (o.synced ? 'Run sync' : 'Run sync') + '</button></td>' +
+        '<td><div style="font-weight:500">' + esc(o.name) + '</div><div class="small muted">' + esc(o.handle) + '</div><a class="small" href="' + ig(o.handle) + '" target="_blank" rel="noopener">View profile</a></td>' +
+        '<td>' + conf + '</td><td>' + (o.synced ? num(o.cleared) : '-') + '</td>' +
+        '<td><button class="btn small" data-act="open" data-token="' + esc(o.token) + '">Open</button></td></tr>';
+    }).join('') : '<tr><td colspan="5" class="muted">No ODs match.</td></tr>';
+  }
+
+  function renderT2() {
+    var g = S.search.toLowerCase(), f = S.f2;
+    var rows = D.pairs.filter(function (p) {
+      if (!inPeriod(p.date)) return false;
+      var hay = (p.name + ' ' + p.handle + ' ' + p.odName + ' ' + p.odHandle).toLowerCase();
+      if (g && hay.indexOf(g) < 0) return false;
+      if (f.creator && (p.name + ' ' + p.handle).toLowerCase().indexOf(f.creator.toLowerCase()) < 0) return false;
+      if (f.od && p.odId !== f.od) return false;
+      if (f.signed && p.status !== f.signed) return false;
+      return true;
+    }).sort(function (a, b) { return new Date(b.date) - new Date(a.date); });
+    var label = PERIODS.filter(function (x) { return x[0] === S.period; })[0];
+    document.getElementById('t2sub').textContent = rows.length + ' creator and OD pairs · ' + label[1] + (label[2] ? ' (last ' + label[2] + ' days)' : '') + ' · last tracker sync ' + time(D.lastTrackerSyncAt);
+    var pill = { yes: '<span class="pill ok">Yes</span>', progress: '<span class="pill warn">In progress</span>', no: '<span class="pill muted">No</span>' };
+    document.querySelector('#t2 tbody').innerHTML = rows.length ? rows.slice(0, S.shown).map(function (p) {
+      return '<tr><td><button class="btn small" data-act="synctracker" data-key="' + esc(p.key) + '">Run sync now</button></td>' +
+        '<td><div style="font-weight:500">' + esc(p.name) + '</div><a class="small" href="' + ig(p.handle) + '" target="_blank" rel="noopener">' + esc(p.handle) + '</a></td>' +
+        '<td><div>' + esc(p.odName) + '</div><div class="small muted">' + esc(p.odHandle) + '</div></td>' +
+        '<td>' + pill[p.status] + '<div class="small muted" style="margin-top:2px">' + dshort(p.date) + '</div></td></tr>';
+    }).join('') : '<tr><td colspan="4" class="muted">Nothing in this period.</td></tr>';
+    document.getElementById('more').innerHTML = rows.length > S.shown ? '<button class="btn" style="margin-top:12px" data-act="more">Show more (' + (rows.length - S.shown) + ' left)</button>' : '';
+  }
+
+  app.addEventListener('input', function (e) {
+    var t = e.target;
+    if (t.id === 'gsearch') S.search = t.value;
+    else if (t.dataset.f1 !== undefined) S.f1[t.dataset.f1] = t.value;
+    else if (t.dataset.f2 !== undefined) S.f2[t.dataset.f2] = t.value;
+    else return;
+    S.shown = 15; renderT1(); renderT2();
+  });
+
+  app.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-act]');
+    if (!b) return;
+    var a = b.dataset.act;
+    if (a === 'logout') api('logout', {}).then(function () { D = null; loginView(); });
+    else if (a === 'period') { S.period = b.dataset.v; S.shown = 15; [].forEach.call(document.querySelectorAll('[data-act=period]'), function (x) { x.classList.toggle('on', x === b); }); renderTiles(); renderT2(); }
+    else if (a === 'more') { S.shown += 15; renderT2(); }
+    else if (a === 'open') window.openOd(b.dataset.token);
+    else if (a === 'syncod') { b.disabled = true; b.textContent = 'Syncing'; api('sync-leads', { odId: b.dataset.id }).then(refresh); }
+    else if (a === 'synctracker') { b.disabled = true; b.textContent = 'Checking'; api('sync-tracker', {}).then(refresh); }
+    else if (a === 'simulate') {
+      var sel = document.getElementById('simod');
+      api('simulate-sign', { odId: sel.value }).then(function (r) { document.getElementById('simmsg').textContent = 'Signed ' + r.handle + '. Open that OD to see the confetti.'; return refresh(); })
+        .catch(function (er) { document.getElementById('simmsg').textContent = er.error || 'Failed'; });
+    }
+    else if (a === 'reset') { api('reset', {}).then(function () { D = null; S.shown = 15; return refresh(); }); }
+    else if (a === 'export') {
+      fetch('/api/ops/export.csv').then(function (r) { return r.text(); }).then(function (txt) {
+        var url = '';
+        
+        var n = Math.max(0, txt.split('\n').length - 1);
+        document.getElementById('exportbox').innerHTML = '<div class="card stack"><div class="spread"><h2>Cleared list (' + num(n) + ' creators)</h2><div class="row"><button class="btn small" data-act="copycsv">Copy CSV</button>' +
+          (url ? '<a class="btn small" style="display:inline-flex;align-items:center;text-decoration:none" href="' + url + '" download="cleared-to-contact.csv">Download</a>' : '') +
+          '<button class="btn small" data-act="closeexport">Close</button></div></div><textarea id="csvtxt" readonly rows="6" style="width:100%;font:12px monospace;border:1px solid var(--line);border-radius:8px;padding:8px"></textarea></div>';
+        document.getElementById('csvtxt').value = txt;
+      });
+    }
+    else if (a === 'copycsv') { var ta = document.getElementById('csvtxt'); ta.select(); try { document.execCommand('copy'); b.textContent = 'Copied'; } catch (x) {} }
+    else if (a === 'closeexport') document.getElementById('exportbox').innerHTML = '';
+  });
+
+  refresh();
+};
+
+(function(){
+  var user=null;try{user=sessionStorage.getItem('ops-user');}catch(e){}
+  var route=require('./api').route;
+  window.fetch=function(url,opt){
+    opt=opt||{};var u=new URL(url,'http://x');var body={};
+    try{if(opt.body)body=JSON.parse(opt.body);}catch(e){}
+    var r=route((opt.method||'GET').toUpperCase(),u.pathname,u.searchParams,body,{user:user});
+    if(r.login){user=r.login;try{sessionStorage.setItem('ops-user',user);}catch(e){}}
+    if(r.logout){user=null;try{sessionStorage.removeItem('ops-user');}catch(e){}}
+    var txt=r.text!==undefined?r.text:JSON.stringify(r.json);
+    return Promise.resolve(new Response(txt,{status:r.status,headers:{'Content-Type':r.contentType||'application/json'}}));
+  };
+  window.openOd=function(t){window.showView('od',t);};
+  var bar=document.getElementById('demobar'),pick=document.getElementById('odpick');
+  var ods=require('./db').get().ods;
+  pick.innerHTML=ods.map(function(o){return '<option value="'+o.token+'">'+o.name+'</option>'}).join('');
+  window.showView=function(view,token){
+    var old=document.getElementById('app'),fresh=old.cloneNode(false);
+    old.replaceWith(fresh);
+    fresh.className=view==='od'?'wrap':'';
+    if(window.__opsTimer){clearInterval(window.__opsTimer);window.__opsTimer=null;}
+    if(token)pick.value=token;
+    bar.querySelectorAll('button.seg').forEach(function(b){b.classList.toggle('on',b.dataset.v===view);});
+    if(view==='ops')window.startOps();else window.startOd(token||pick.value);
+    window.scrollTo(0,0);
+  };
+  bar.addEventListener('click',function(e){var b=e.target.closest('button.seg');if(b)window.showView(b.dataset.v,b.dataset.v==='od'?pick.value:null);});
+  pick.addEventListener('change',function(){window.showView('od',pick.value);});
+  window.showView('ops');
+})();
+</script></body></html>

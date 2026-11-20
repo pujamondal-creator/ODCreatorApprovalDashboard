@@ -33,6 +33,10 @@ Ops view: tiles (Cleared to contact, Do not contact, Waiting for OD, Creators si
 - OD links use a private token in the URL. Treat links like passwords.
 - No WhatsApp or email notifications are sent.
 
+## Single file demo
+
+demo/index.html is the whole app in one file (dummy data, runs in the browser, no server). Open it in Chrome. A dark bar at the top switches between the internal ops view and any OD dashboard.
+
 ## Layout
 
 - lib/api.js: all endpoints, shared by the Node server and the single file hosted demo
